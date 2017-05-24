@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+var app = require('../app');
+var debug = require('debug')('nodejs:server');
+
+//var port = process.env.PORT || '3000';
+
+var count = "0";
+var obj = {
+    team: "",
+    res:  "",
+    opp: "",
+};
+
+var tArray = [
+    ["x","-","-","-"], //row 0
+    ["-","x","-","-"], //row 1
+    ["-","-","x","-"], //row 2
+    ["-","-","-","x"]  //row 3
+];
+
+//var tArray[0] = [];
+app.post("/postResult", function(req, res) {
+    if( req.body.changeBy ){
+        //console.log("What is the number? "+req.body.changeBy.team);
+        var team = req.body.changeBy.team;
+        var result = req.body.changeBy.res;
+        var opp = req.body.changeBy.opp;
+        console.log("MY values: " +team,result,opp);
+
+        tArray[team][opp] = result;
+        console.log(tArray[team][opp]);
+
+        res.setHeader("Content-Type", "application/json");
+        res.write(JSON.stringify(tArray));
+        res.end();
+    }
+    else {
+        res.status(400);
+        res.setHeader("Content-Type", "text/plain");
+        res.write("Invalid request parameter - must be numeric.");
+        res.end();
+    }
+});
+
+
+app.listen(3000);
+console.log("Sever is running..");
